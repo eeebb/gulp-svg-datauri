@@ -1,29 +1,54 @@
-# Inline images via base64
+# Inline svg images
 
-This gulp plugin inline images via base64. It inlines only images you want. Wrap image name with inline function in source code.
+This gulp plugin embed svg images as encoded data URIs.
+Select the images to embed by wrapping relative url with the inline function.
+
+eg. ```inline('path/to/image.svg')``` becomes ```url('data:image/svg+xml,%3Csvg...svg%3E')```
+
+Forked from [goschevski/gulp-base64-inline](https://github.com/goschevski/gulp-base64-inline) to implement utf8 with uri encoding for svg images. Uses [svgo](https://github.com/svg/svgo).
+
+Usage with default options:
 
 ```javascript
 var gulp = require('gulp');
-var base64 = require('gulp-base64-inline');
+var svgdatauri = require('gulp-svg-datauri');
 
-gulp.task('css', function () {
-    return gulp.src('css/style.css')
-        .pipe(base64('../assets/img'))
-        .pipe(gulp.dest('assets/css/'));
+gulp.task('svginline', function () {
+    return gulp.src('assets/styles/**/*')
+        .pipe(svgdatauri({
+            wrapper: 'inline',
+            encoding: 'utf8',
+            imageSource: 'assets' // path containing the image directory
+          }))
+        .pipe(gulp.dest('dist/styles/'));
+});
 ```
 
 Source:
 
 ```css
-.star {
-    background: inline('star.svg');
+.star_crescent {
+    background-image: inline('images/Star_and_Crescent.svg');
 }
 ```
 
 Result:
 
 ```css
-.star {
-    background: url(data:image/svg;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBoZWlnaHQ9IjQzIiB2aWV3Qm94PSIwIDAgNDUgNDMiIHdpZHRoPSI0NSI+PHN2ZyBoZWlnaHQ9IjMzIiB2aWV3Qm94PSIwIDAgMzUgMzMiIHdpZHRoPSIzNSIgeD0iNSIgeT0iNSI+PHRpdGxlPnN0YXI8L3RpdGxlPjxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPjxwYXRoIHN0cm9rZT0iIzk3OTc5NyIgZmlsbD0iI0Q4RDhEOCIgZD0iTTE3LjUgMjYuMjVMNy4yMTQgMzEuNjU4bDEuOTY0LTExLjQ1NC04LjMyLTguMTEyIDExLjUtMS42N0wxNy41IDBsNS4xNDMgMTAuNDIgMTEuNSAxLjY3Mi04LjMyIDguMTEyIDEuOTYzIDExLjQ1NHoiLz48L3N2Zz48L3N2Zz4=);
+.star_crescent {
+  background-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22272%22%20height%3D%22256%22%20viewBox%3D%227%2014%20272%20256%22%3E%3Cg%20fill%3D%22%23007f00%22%3E%3Cpath%20d%3D%22M125.135%2036.188C67.608%2037.282%2021.26%2084.308%2021.26%20142.094c0%2058.472%2047.465%20105.938%20105.937%20105.938%2027.338%200%2052.265-10.384%2071.063-27.407-13.253%207.618-28.627%2011.97-45%2011.97-49.93%200-90.438-40.51-90.438-90.44%200-49.928%2040.508-90.436%2090.438-90.436%2016.504%200%2031.988%204.424%2045.312%2012.155-18.833-17.19-43.885-27.687-71.375-27.687-.685%200-1.38-.013-2.062%200z%22%2F%3E%3Cpath%20d%3D%22M266.13%20142.156l-91.155%2029.618%2056.337-77.54v95.845l-56.337-77.542z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')
 }
 ```
+
+## Usage with css minification
+
+To avoid issue with clean-css set these options:
+```
+rebase: false,
+compatibility: '+properties.urlQuotes'
+```
+
+## Todo
+
+- [ ] IE8 fallback
+
