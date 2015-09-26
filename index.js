@@ -7,6 +7,11 @@ var SVGO = require('svgo');
 var svgo = new SVGO();
 
 module.exports = function (options) {
+
+    if (typeof options === 'undefined') {
+      options = {}
+    }
+
     function embedSvg (file, enc, callback) {
         var wrapper = options.wrapper || 'inline';
         var encoding = options.encoding || 'utf8';
@@ -59,8 +64,8 @@ module.exports = function (options) {
             var fileMime = mime.lookup(imagePath) + ';';
 
             var output = "url('" + fallbackImagePath + "');";
-                output += "background: url('data:" + fileMime + encType + ',' + encodeURIComponent(svg) + "')";
-                output += ', linear-gradient(transparent, transparent);';
+            output += "background: url('data:" + fileMime + encType + ',' + encodeURIComponent(svg) + "')";
+            output += ', linear-gradient(transparent, transparent);';
 
             return output;
         }
