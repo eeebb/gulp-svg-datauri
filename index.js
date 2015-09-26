@@ -35,6 +35,7 @@ module.exports = function (options) {
 
         function inline (inlineExpr, quotedPath) {
             var imagePath = quotedPath.replace(/['"]/g, '');
+            var fallbackImagePath = imagePath.replace(/.svg/g, '.png');
             try {
                 var fileData = fs.readFileSync(path.join(imageSource, imagePath));
             }
@@ -57,8 +58,11 @@ module.exports = function (options) {
 
             var fileMime = mime.lookup(imagePath) + ';';
 
-            return "url('data:" + fileMime  + encType + encodeURIComponent(encodedSvg) + "')";
+            var output = "url('" + fallbackImagePath + "');";
+                output += "background: url('data:" + fileMime + encType + ',' + encodeURIComponent(svg) + "')";
+                output += ', linear-gradient(transparent, transparent);';
 
+            return output;
         }
 
         // check if file.contents is a `Buffer`
