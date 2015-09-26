@@ -44,14 +44,18 @@ module.exports = function (options) {
                 return inlineExpr;
             }
 
-            var optimizedSvg;
-            svgo.optimize(fileData.toString(), function (result) {
-                optimizedSvg = new Buffer(result.data);
+            var svg;
+            var encType='charset=utf8';
+            svgo.optimize(fileData.toString('utf8'), function (result) {
+                svg = new Buffer(result.data);
             });
-            var encodedSvg = optimizedSvg.toString(encoding);
 
-            var fileMime = mime.lookup(imagePath);
-            var encType = encoding == 'base64'?  ';base64,' : '';
+            if ( encoding == 'base64' ) {
+              svg = svg.toString('base64');
+              encType = 'base64';
+            }
+
+            var fileMime = mime.lookup(imagePath) + ';';
 
             return "url('data:" + fileMime  + encType + encodeURIComponent(encodedSvg) + "')";
 
